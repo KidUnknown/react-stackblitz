@@ -1,30 +1,57 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import Hello from './Hello';
-import Title from './Title';
 import './style.css';
-/*                                                                            */
-class App extends Component {
-  constructor() {
-    super();
+
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      name: 'React',
-      title: 'My first stackblitz app',
-      bodycopy: 'Just a small sentence for the body area'
+      error: null,
+      isLoaded: false,
+      items: []
     };
   }
 
+  componentDidMount() {
+    fetch("https://jsonplaceholder.typicode.com/photos")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            isLoaded: true,
+            items: result
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+  }
+
   render() {
-    return (
-      <div>
-        <Title title={this.state.title} />
-        <Hello name={this.state.name} />
-        <p>
-          {this.state.bodycopy}
-        </p>
-      </div>
-    );
+    const { error, isLoaded, items } = this.state;
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    } else if (!isLoaded) {
+      return <div>Loading...</div>;
+    } else {
+      return (
+        <ul>
+          {items.map(item => (
+            <li key={item.id}>
+              {item.id} {item.albumId} {item.thumbnailUrl}
+            </li>
+          ))}
+        </ul>
+      );
+    }
   }
 }
 
-render(<App />, document.getElementById('root'));
+render(<MyComponent />, document.getElementById('root'));
