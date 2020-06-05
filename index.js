@@ -8,8 +8,6 @@ function MyComponent() {
 
   if (res.error) return <div>Error: {res.error.message}</div>;
   if (!res.items) return <div>Loading...</div>;
-
-  //console.log(res.items);
   
   return (
     <ul>
