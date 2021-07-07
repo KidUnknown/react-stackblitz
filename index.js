@@ -1,29 +1,25 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import Hello from './Hello';
-import Title from './Title';
+import useFetch from './_UseFetch';
 import './style.css';
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      name: 'React',
-      title: 'My first stackblitz app'
-    };
-  }
+function MyComponent() {
+  const res = useFetch('https://jsonplaceholder.typicode.com/albums', {});
 
-  render() {
-    return (
-      <div>
-        <Hello name={this.state.name} />
-        <Title title={this.state.title} />
-        <p>
-          Start editing to see some magic happen :)
-        </p>
-      </div>
-    );
-  }
+  if (res.error) return <div>Error: {res.error.message}</div>;
+  if (!res.items) return <div>Loading...</div>;
+  
+  return (
+    <ul>
+      {res.items.map(item => {
+        const { id, userId, title } = item;
+        <li key={id}>
+          <p>Album: {id} user: {userId}</p>
+          <p>title: {title} </p>
+        </li>
+      })}
+    </ul>
+  );
 }
 
-render(<App />, document.getElementById('root'));
+render(<MyComponent />, document.getElementById('root'));
